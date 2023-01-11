@@ -1,6 +1,6 @@
 <img src="https://www.sipgatedesign.com/wp-content/uploads/wort-bildmarke_positiv_2x.jpg" alt="sipgate logo" title="sipgate" align="right" height="112" width="200"/>
 
-# sipgate.io Node.js call events example
+# sipgate.io PHP call events example
 This example demonstrates how to receive and process webhooks from [sipgate.io](https://developer.sipgate.io/).
 
 For further information regarding the push functionalities of sipgate.io please visit https://developer.sipgate.io/push-api/api-reference/
@@ -15,15 +15,14 @@ For further information regarding the push functionalities of sipgate.io please 
 - [Execution](#Execution)
 - [How It Works](#How-It-Works)
 - [Common Issues](#Common-Issues)
-- [Related](#Related)
 - [Contact Us](#Contact-Us)
 - [License](#License)
 - [External Libraries](#External-Libraries)
 
 
 ## Prerequisites
-- Node.js >= 10.15.3
-
+- PHP
+- Composer
 
 ## Enabling sipgate.io for your sipgate account
 In order to use sipgate.io, you need to book the corresponding package in your sipgate account. The most basic package is the free **sipgate.io S** package.
@@ -101,7 +100,7 @@ In that case, the webhook URL needs to be adjusted accordingly.
 ## Install dependencies:
 Navigate to the project's root directory and run:
 ```bash
-npm install
+composer install
 ```
 
 
@@ -110,72 +109,42 @@ Navigate to the project's root directory.
 
 Run the application:
 ```bash
-node index.js 
+php -S localhost:8080 -t src/ src/router.php
 ```
 
 
 ## How It Works
-This example uses the _Express_ framework as a simple means to set up an HTTP server for handling webhook requests from sipgate.io.
-The functions defined in the script are the callback functions that will be used by the server to handle incoming call events.
+This example uses the _SimplePHPRouter_ package as a simple means to set up an HTTP server for handling webhook requests from sipgate.io.
 
-```javascript
-function handleNewCall(request, response) {
-	const { from: caller, to: calleeNumber } = request.body;
+```php
+Route::add('/newcall', function () {
+	$caller = $_POST['from'];
+	$callee = $_POST['to'];
 
-	console.log(`New call from ${caller} to ${calleeNumber} is ringing...`);
-
-	response.set('Content-Type', 'application/xml');
-	response.send(`<Response onAnswer="${BASE_URL}/on-answer" onHangup="${BASE_URL}/on-hangup" />`);
-}
+	header("Content-Type: application/xml; charset=UTF-8");
+	return '<Response onAnswer="' . $GLOBALS['BASE_URL'] . '/on-answer" onHangup="' . $GLOBALS['BASE_URL'] . '/on-hangup" />';
+}, 'POST');
 ```
 
-The first, `handleNewCall`, takes a request and a response object as arguments.
-From the request body the two properties `from` and `to` are extracted and used to display a user-friendly message on the console.
-Then the `Content-Type` header on the response is set to `application/xml` and an XML-formatted response is sent.
+The first, `newcall` receives the webhook call and sends a response with the `Content-Type` header on the response type `application/xml`.
 This response consists of a single `Response` tag containing two attributes, `onAnswer` and `onHangup`.
 Each one is set to the URL that the corresponding events should be sent to.
 
-```javascript
-function handleOnAnswer(request, response) {
-	const { from: caller, user: calleeName } = request.body;
-	console.log(`${calleeName} answered call from ${caller}`);
-	response.end();
-}
+```php
+Route::add('/on-answer', function () {
+	$caller = $_POST['from'];
+	$callee = $_POST['to'];
 
-function handleOnHangup(request, response) {
-	console.log(`The call has been hung up`);
-	response.end();
-}
+	print("$callee answered call from $callee");
+}, 'POST');
+
+Route::add('/on-hangup', function () {
+
+	print("The call has been hung up");
+}, 'POST');
 ```
 
 The other two functions work very similarly, but send only an empty response as that will be discarded by sipgate.io.
-
-```javascript
-const app = express();
-
-app.use(express.urlencoded({ extended: true }));
-```
-Now, to actually handle incoming requests an _Express_ app is instantiated with `express()`.
-Since the request data will be in `application/x-www-form-urlencoded` format, a middleware is registered on that instance to decode said data to a Javascript object.
-The `extended` property is necessary to handle nested object structures.
-
-```javascript
-app.post('/new-call', handleNewCall);
-app.post('/on-answer', handleOnAnswer);
-app.post('/on-hangup', handleOnHangup);
-```
-
-In order to register the previously defined callback functions on the `app` instance, its `post` method is called with the desired route and the corresponding function.
-For example, the address `https://your.server-address.com/new-call` will be mapped to the `handleNewCall` function.
-
-```javascript
-app.listen(PORT, () => {
-	console.log(`Server listening on: http://localhost:${PORT}`);
-});
-```
-
-Lastly, the server is started by calling the `listen` method on the `app` instance with the port that the application should be listening on and a callback function that is executed if the server is running successfully.
-In this case it just prints a message to the console to tell the user where the server is listening.
 
 ## Common Issues
 
@@ -205,10 +174,6 @@ Possible reasons are:
 - webhooks are not enabled for the phoneline that received the call
 
 
-## Related
-- [Express](https://expressjs.com/)
-
-
 ## Contact Us
 Please let us know how we can improve this example.
 If you have a specific feature request or found a bug, please use **Issues** or fork this repository and send a **pull request** with your improvements.
@@ -221,9 +186,12 @@ This project is licensed under **The Unlicense** (see [LICENSE file](./LICENSE))
 ## External Libraries
 This code uses the following external libraries
 
-- _Express_:
-  - Licensed under the [MIT License](https://opensource.org/licenses/MIT)
-  - Website: https://expressjs.com/
++ PHP dotenv:
+  + Licensed under the [The BSD 3-Clause License](https://opensource.org/licenses/BSD-3-Clause)
+  + Website: https://github.com/vlucas/phpdotenv
++ SimplePHPRouter:
+  + Licensed under the [MIT License](https://opensource.org/licenses/MIT)
+  + Website: https://github.com/steampixel/simplePHPRouter
 
 
 ---
