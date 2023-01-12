@@ -20,15 +20,12 @@ Route::add('/on-answer', function ($request, $response) {
 	$callee = $_POST['to'];
 
 	print("$callee answered call from $callee");
-	return $response->withStatus(200);
 }, 'POST');
 
 
 Route::add('/on-hangup', function ($request, $response) {
 
 	print("The call has been hung up");
-	return $response->withStatus(200);
 }, 'POST');
 
 Route::run('/');
-
