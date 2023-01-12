@@ -8,22 +8,20 @@ $dotenv->load();
 
 $BASE_URL = $_ENV['WEBHOOK_URL'];
 
-Route::add('/newcall', function ($request, $response) {
+Route::add('/newcall', function () {
 
-	$response->getBody()->write('<Response onAnswer="' . $GLOBALS['BASE_URL'] . '/on-answer" onHangup="' . $GLOBALS['BASE_URL'] . '/on-hangup" />');
-	$response.header("Content-Type: application/xml; charset=UTF-8");
-	return $response;
+    header("Content-Type: application/xml; charset=UTF-8");
+    return '<Response onAnswer="' . $GLOBALS['BASE_URL'] . '/on-answer" onHangup="' . $GLOBALS['BASE_URL'] . '/on-hangup" />';
 }, 'POST');
 
-Route::add('/on-answer', function ($request, $response) {
+Route::add('/on-answer', function () {
 	$caller = $_POST['from'];
 	$callee = $_POST['to'];
 
 	print("$callee answered call from $callee");
 }, 'POST');
 
-
-Route::add('/on-hangup', function ($request, $response) {
+Route::add('/on-hangup', function () {
 
 	print("The call has been hung up");
 }, 'POST');
