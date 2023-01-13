@@ -8,7 +8,7 @@ $dotenv->load();
 
 $BASE_URL = $_ENV['WEBHOOK_URL'];
 
-Route::add('/newcall', function () {
+Route::add('/new-call', function () {
 
     header("Content-Type: application/xml");
     return '<Response onAnswer="' . $GLOBALS['BASE_URL'] . '/on-answer" onHangup="' . $GLOBALS['BASE_URL'] . '/on-hangup" />';
