@@ -27,7 +27,7 @@ For further information regarding the push functionalities of sipgate.io please 
 ## Enabling sipgate.io for your sipgate account
 In order to use sipgate.io, you need to book the corresponding package in your sipgate account. The most basic package is the free **sipgate.io S** package.
 
-If you use [sipgate basic](https://app.sipgatebasic.de/feature-store) or [simquadrat](https://app.simquadrat.de/feature-store) you can book packages in your product's feature store.
+If you use [sipgate business](https://app.sipgate.com/w0/team/settings/products) you can book packages in your product's feature store.
 If you are a _sipgate team_ user logged in with an admin account you can find the option under **Account Administration**&nbsp;>&nbsp;**Plans & Packages**.
 
 
